@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { MdDelete } from 'react-icons/md';
 import { FiLoader } from 'react-icons/fi';
 
 import { 
@@ -10,14 +9,10 @@ import {
     Title,
     Content,
     NoContent,
-    GifGrid,
-    GifCard,
-    DeleteButton,
-    GifInfo,
-    GifTitle,
-    GifAuthor
+    GifGrid
 } from './styles';
 
+import GifCard from '../../components/GifCard';
 import LogoImg from '../../resources/assets/logo.svg';
 import colors from '../../resources/values/colors';
 import EmptyImg from '../../resources/assets/no-favorites.svg';
@@ -46,19 +41,12 @@ const Favorites: React.FC = () => {
                     </NoContent>
                     : <GifGrid>
                         {Object.keys(favorites).map(key => 
-                            <GifCard key={favorites[key].id}>
-                            <DeleteButton onClick={() => removeFavorite(favorites[key].id)}>
-                                <MdDelete size={25} color={colors.gray} />
-                            </DeleteButton>
-                            <img 
-                                src={favorites[key].url}
-                                alt="gif"
+                            <GifCard
+                                key={favorites[key].id}
+                                gif={favorites[key]}
+                                handleAction={() => removeFavorite(favorites[key].id)}
+                                iconType="trash"
                             />
-                            <GifInfo>
-                                <GifTitle>{favorites[key].title}</GifTitle>
-                                <GifAuthor>{favorites[key].username ? `@${favorites[key].username}` : 'anonymous'}</GifAuthor>
-                            </GifInfo>
-                        </GifCard>
                         )}
                     </GifGrid>
                 }

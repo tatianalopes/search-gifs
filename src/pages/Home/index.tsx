@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import { MdFavorite, MdFavoriteBorder, MdSearch, MdShuffle } from 'react-icons/md';
+import { MdFavorite, MdSearch, MdShuffle } from 'react-icons/md';
 import { FiLoader } from 'react-icons/fi';
 
 import { 
@@ -15,14 +15,10 @@ import {
     RandomGif,
     Title,
     Content,
-    GifGrid,
-    GifCard,
-    FavoriteButton,
-    GifInfo,
-    GifTitle,
-    GifAuthor
+    GifGrid
 } from './styles';
 
+import GifCard from '../../components/GifCard';
 import LogoImg from '../../resources/assets/logo.svg';
 import colors from '../../resources/values/colors';
 import { useStorage } from '../../hooks/storage';
@@ -156,7 +152,7 @@ const Home: React.FC = () => {
         }
     }
 
-    const handleFavorite = useCallback((updatedGif) => {    
+    const handleFavorite = useCallback((updatedGif: IGif) => {    
         updatedGif.isFavorite = !updatedGif.isFavorite;
 
         const updatedList = gifs.map((gif) => {
@@ -211,22 +207,12 @@ const Home: React.FC = () => {
                 {title && <Title>{title}</Title>}
                 <GifGrid>
                     {gifs.map(gif => 
-                        <GifCard key={gif.id}>
-                            <FavoriteButton onClick={(e) => handleFavorite(gif)}>
-                                {gif.isFavorite ? 
-                                    (<MdFavorite size={25} color={colors.red} />) : 
-                                    (<MdFavoriteBorder size={25} color={colors.gray} />)
-                                }
-                            </FavoriteButton>
-                            <img 
-                                src={gif.url}
-                                alt="gif"
-                            />
-                            <GifInfo>
-                                <GifTitle>{gif.title}</GifTitle>
-                                <GifAuthor>{gif.username ? `@${gif.username}` : 'anonymous'}</GifAuthor>
-                            </GifInfo>
-                        </GifCard>
+                        <GifCard
+                            key={gif.id}
+                            gif={gif}
+                            handleAction={handleFavorite}
+                            iconType="heart"
+                        />
                     )}
                 </GifGrid>
             </Content>
