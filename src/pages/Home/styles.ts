@@ -125,7 +125,7 @@ export const RandomGif = styled.button`
 export const Title = styled.div`
     color: ${colors.isabelline};
     text-transform: capitalize;
-    font-size: 48px;
+    font-size: 40px;
     font-weight: 500;
 
     width: 100%;
@@ -139,6 +139,7 @@ export const Content = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-row-gap: 20px;
+    grid-column-gap: 20px;
 
     justify-items: center;
     align-items: center;
@@ -159,5 +160,14 @@ export const GifCard = styled.div`
         height: 214px;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
+    }
+
+    button {
+        background: transparent;
+        border: 0;
+        cursor: pointer;
+        margin-left: auto;
+
+        align-self: flex-start;
     }
 `;

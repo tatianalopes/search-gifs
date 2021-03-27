@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { MdFavorite, MdSearch, MdShuffle } from 'react-icons/md';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
+import { MdFavorite, MdFavoriteBorder, MdSearch, MdShuffle } from 'react-icons/md';
 
 import { 
     Container,
@@ -16,11 +17,13 @@ import {
 } from './styles';
 
 import LogoImg from '../../resources/assets/logo.svg';
+import colors from '../../resources/values/colors';
+import { useStorage } from '../../hooks/storage';
 import gifApi from '../../services/gifApi';
 
 const GIF_API_KEY = process.env.REACT_APP_GIPHY_API_KEY;
 
-interface IApiReponse {
+interface IApiResponse {
     id: string;
         title: string;
         username: string;
@@ -38,12 +41,18 @@ interface IGif {
     title: string;
     username: string;
     url: string;
+    isFavorite: boolean;
 }
 
 const Home: React.FC = () => {
 
+    const history = useHistory();
+    
+    const { storage, addFavorite, removeFavorite } = useStorage();
+
     const [gifs, setGifs] = useState<IGif[]>([]);
     const [searchValue, setSearchValue] = useState('');
+    const [title, setTitle] = useState('');
     const [isFetching, setIsFetching] = useState(false);
     const [offset, setOffset] = useState(0);
 
@@ -52,51 +61,86 @@ const Home: React.FC = () => {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
+    const handleScroll = () => {
+        if (window.innerHeight + document.documentElement.scrollTop 
+            !== document.documentElement.offsetHeight) return;
+        setIsFetching(true);
+    }
+
+    const fetchGifs = useCallback((clear: boolean) => {   
+        const queryOffset = clear ? 0 : offset;
+
+        gifApi.get(`search?api_key=${GIF_API_KEY}&q=${searchValue}&offset=${queryOffset}`)
+            .then(({ data }) => {
+                const newGifs = data.data.map((gif: IApiResponse) => (
+                    {
+                        id: gif.id,
+                        title: gif.title,
+                        username: gif.username,
+                        url: gif.images.original.url,
+                        isFavorite: gif.id in storage,
+                    }
+                ));
+
+                if (clear) {
+                    setGifs(newGifs);
+                    setOffset(0 + data.pagination.count);
+                } else {
+                    setGifs(prevState => [...prevState, ...newGifs]);
+                    setOffset(prevState => prevState + data.pagination.count);
+                }
+                setTitle(searchValue);
+            })
+    }, [searchValue, offset, setGifs, storage]);
+
     useEffect(() => {
         if (!isFetching) return;
         fetchGifs(false);
         setIsFetching(false);
-      }, [isFetching]);
-
-    const handleScroll = () => {
-        if (window.innerHeight + document.documentElement.scrollTop !== document.documentElement.offsetHeight) return;
-        setIsFetching(true);
-    }
+      }, [isFetching, fetchGifs]);
 
     const handleSearchValue = (event: React.FormEvent<HTMLInputElement>) => {
         setSearchValue(event.currentTarget.value);
     }
 
     const handleSearch = () => {
+        setOffset(0);
         fetchGifs(true);
     }
 
-    const fetchGifs = (clear: boolean) => {
-        gifApi.get(`search?api_key=${GIF_API_KEY}&q=${searchValue}&offset=${offset}`)
-            .then(({ data }) => {
-                setOffset(prevState => prevState + data.pagination.count);
-                const newGifs = data.data.map((gif: IApiReponse) => (
-                    {
-                        id: gif.id,
-                        title: gif.title,
-                        username: gif.username,
-                        url: gif.images.original.url
-                    }
-                ));
-
-                if (clear) {
-                    setGifs(newGifs);
-                } else {
-                    setGifs([...gifs, ...newGifs]);
-                }
-            })
+    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'Enter') {
+            handleSearch();
+        }
     }
+
+    const handleFavorite = useCallback((updatedGif) => {    
+        updatedGif.isFavorite = !updatedGif.isFavorite;
+
+        const updatedList = gifs.map((gif) => {
+          if (gif.id === updatedGif.id) {
+            return {...gif, isFavorite: updatedGif.isFavorite};
+          }
+          return gif;
+        });
+    
+        setGifs(updatedList);
+        if (updatedGif.isFavorite) {
+            addFavorite(updatedGif);
+        } else {
+            removeFavorite(updatedGif.id);
+        }
+    }, [gifs, addFavorite, removeFavorite]);
 
     return (
         <Container>
             <Header>
-                <img src={LogoImg} alt="logo" />
-                <FavoritesButton>
+                <img 
+                    src={LogoImg} 
+                    alt="logo"
+                    onClick={() => window.location.reload()}
+                />
+                <FavoritesButton onClick={() => history.push('/favorites')}>
                     <span>My Favorites</span>
                     <MdFavorite size={30} />
                 </FavoritesButton>
@@ -105,7 +149,10 @@ const Home: React.FC = () => {
                 <InputArea>
                     <Input>
                         <MdSearch size={30} />
-                        <input onChange={event => handleSearchValue(event)} />
+                        <input 
+                            onChange={handleSearchValue}
+                            onKeyPress={handleKeyPress}
+                        />
                     </Input>
                     <SearchGifButton onClick={handleSearch}>Search</SearchGifButton>
                 </InputArea>
@@ -115,7 +162,7 @@ const Home: React.FC = () => {
                     <MdShuffle size={20} />
                 </RandomGif>
             </SearchBar>
-            <Title>{searchValue}</Title>
+            {title && <Title>{title}</Title>}
             <Content>
                 {gifs.map(gif => 
                     <GifCard key={gif.id}>
@@ -125,6 +172,9 @@ const Home: React.FC = () => {
                         />
                         <span>{`Title ${gif.title}`}</span>
                         <span>{`Username ${gif.username}`}</span>
+                        <button type="button" onClick={(e) => handleFavorite(gif)}>
+                            {gif.isFavorite ? <MdFavorite color={colors.red} /> : <MdFavoriteBorder />}
+                        </button>
                     </GifCard>
                 )}
             </Content>
