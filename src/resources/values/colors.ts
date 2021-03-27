@@ -4,7 +4,8 @@ const colors = {
     heliotropeGray: '#9A8C98',
     silverPink: '#C9ADA7',
     isabelline: '#F2E9E4',
-    gray: '#DCDCDC'
+    gray: '#DCDCDC',
+    red: '#E12D2D'
   }
   
   export default colors;

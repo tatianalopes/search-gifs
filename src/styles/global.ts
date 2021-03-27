@@ -1,6 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 
-import colors from '../resources/colors';
+import colors from '../resources/values/colors';
 
 export default createGlobalStyle`
     * {
@@ -12,5 +12,8 @@ export default createGlobalStyle`
     
     body {
         background-color: ${colors.lightBlue};
+
+        font-family: 'Roboto', sans-serif;
+        font-weight: 400;
     }
 `;

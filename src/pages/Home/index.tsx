@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
+import { MdFavorite, MdSearch, MdShuffle } from 'react-icons/md';
 
 import { 
     Container,
+    Header,
+    FavoritesButton,
     SearchBar,
+    InputArea,
+    Input,
+    SearchGifButton,
+    RandomGif,
+    Title,
     Content,
     GifCard
 } from './styles';
 
+import LogoImg from '../../resources/assets/logo.svg';
 import gifApi from '../../services/gifApi';
 
 const GIF_API_KEY = process.env.REACT_APP_GIPHY_API_KEY;
@@ -85,10 +94,28 @@ const Home: React.FC = () => {
 
     return (
         <Container>
+            <Header>
+                <img src={LogoImg} alt="logo" />
+                <FavoritesButton>
+                    <span>My Favorites</span>
+                    <MdFavorite size={30} />
+                </FavoritesButton>
+            </Header>
             <SearchBar>
-                <input onChange={event => handleSearchValue(event)} />
-                <button onClick={handleSearch}>Search</button>
+                <InputArea>
+                    <Input>
+                        <MdSearch size={30} />
+                        <input onChange={event => handleSearchValue(event)} />
+                    </Input>
+                    <SearchGifButton onClick={handleSearch}>Search</SearchGifButton>
+                </InputArea>
+                
+                <RandomGif>
+                    <span>Search random gifs</span>
+                    <MdShuffle size={20} />
+                </RandomGif>
             </SearchBar>
+            <Title>{searchValue}</Title>
             <Content>
                 {gifs.map(gif => 
                     <GifCard key={gif.id}>
