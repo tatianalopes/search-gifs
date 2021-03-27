@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { MdFavorite, MdFavoriteBorder, MdSearch, MdShuffle } from 'react-icons/md';
+import { FiLoader } from 'react-icons/fi';
 
 import { 
     Container,
     Header,
+    Logo,
     FavoritesButton,
     SearchBar,
     InputArea,
@@ -13,7 +15,12 @@ import {
     RandomGif,
     Title,
     Content,
-    GifCard
+    GifGrid,
+    GifCard,
+    FavoriteButton,
+    GifInfo,
+    GifTitle,
+    GifAuthor
 } from './styles';
 
 import LogoImg from '../../resources/assets/logo.svg';
@@ -135,11 +142,14 @@ const Home: React.FC = () => {
     return (
         <Container>
             <Header>
-                <img 
-                    src={LogoImg} 
-                    alt="logo"
-                    onClick={() => window.location.reload()}
-                />
+                <Logo>
+                    <img 
+                        src={LogoImg} 
+                        alt="logo"
+                        onClick={() => window.location.reload()}
+                    />
+                    <FiLoader size={30} color={colors.isabelline} />
+                </Logo>
                 <FavoritesButton onClick={() => history.push('/favorites')}>
                     <span>My Favorites</span>
                     <MdFavorite size={30} />
@@ -162,22 +172,30 @@ const Home: React.FC = () => {
                     <MdShuffle size={20} />
                 </RandomGif>
             </SearchBar>
-            {title && <Title>{title}</Title>}
             <Content>
-                {gifs.map(gif => 
-                    <GifCard key={gif.id}>
-                        <img 
-                            src={gif.url} 
-                            alt={gif.title} 
-                        />
-                        <span>{`Title ${gif.title}`}</span>
-                        <span>{`Username ${gif.username}`}</span>
-                        <button type="button" onClick={(e) => handleFavorite(gif)}>
-                            {gif.isFavorite ? <MdFavorite color={colors.red} /> : <MdFavoriteBorder />}
-                        </button>
-                    </GifCard>
-                )}
+                {title && <Title>{title}</Title>}
+                <GifGrid>
+                    {gifs.map(gif => 
+                        <GifCard key={gif.id}>
+                            <FavoriteButton onClick={(e) => handleFavorite(gif)}>
+                                {gif.isFavorite ? 
+                                    (<MdFavorite size={25} color={colors.red} />) : 
+                                    (<MdFavoriteBorder size={25} color={colors.gray} />)
+                                }
+                            </FavoriteButton>
+                            <img 
+                                src={gif.url}
+                                alt="gif"
+                            />
+                            <GifInfo>
+                                <GifTitle>{`Title ${gif.title}`}</GifTitle>
+                                <GifAuthor>{gif.username ? `@${gif.username}` : 'anonymous'}</GifAuthor>
+                            </GifInfo>
+                        </GifCard>
+                    )}
+                </GifGrid>
             </Content>
+            
         </Container>
     );
 };
