@@ -37,8 +37,6 @@ interface IApiResponse {
         images: {
             original: {
                 url: string;
-                height: string;
-                width: string;
             }
         }
 }
@@ -51,18 +49,24 @@ interface IGif {
     isFavorite: boolean;
 }
 
+type SearchTypes = 'trending' | 'search' | 'random';
+
+const apiLimit = 40;
+
 const Home: React.FC = () => {
 
     const history = useHistory();
     
-    const { storage, addFavorite, removeFavorite } = useStorage();
+    const { favorites, addFavorite, removeFavorite } = useStorage();
 
-    const [gifs, setGifs] = useState<IGif[]>([]);
     const [searchValue, setSearchValue] = useState('');
-    const [title, setTitle] = useState('');
-    const [isFetching, setIsFetching] = useState(false);
+    const [title, setTitle] = useState('Trending');
+    const [searchType, setSearchType] = useState<SearchTypes>('trending');
+    const [gifs, setGifs] = useState<IGif[]>([]);
     const [offset, setOffset] = useState(0);
+    const [isFetching, setIsFetching] = useState(false);
 
+    // detect when scroll reaches the bottom of the page
     useEffect(() => {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
@@ -74,48 +78,79 @@ const Home: React.FC = () => {
         setIsFetching(true);
     }
 
-    const fetchGifs = useCallback((clear: boolean) => {   
-        const queryOffset = clear ? 0 : offset;
+    const formatResponse = useCallback((data: IApiResponse): IGif => {
+        return {
+            id: data.id,
+            title: data.title,
+            username: data.username,
+            url: data.images.original.url,
+            isFavorite: data.id in favorites,
+        }
+    }, [favorites]);
 
-        gifApi.get(`search?api_key=${GIF_API_KEY}&q=${searchValue}&offset=${queryOffset}`)
+    // show trendings gifs 
+    useEffect(() => {
+        if (gifs.length > 0) return;
+
+        gifApi.get(`trending?api_key=${GIF_API_KEY}&offset=0&limit=${apiLimit}`)
             .then(({ data }) => {
-                const newGifs = data.data.map((gif: IApiResponse) => (
-                    {
-                        id: gif.id,
-                        title: gif.title,
-                        username: gif.username,
-                        url: gif.images.original.url,
-                        isFavorite: gif.id in storage,
-                    }
-                ));
+                const newGifs = data.data.map((gif: IApiResponse) => formatResponse(gif));
+                setGifs(newGifs);
 
-                if (clear) {
-                    setGifs(newGifs);
-                    setOffset(0 + data.pagination.count);
+                setOffset(data.pagination.count);
+            });
+    }, [gifs, formatResponse]);
+
+    const fetchGifs = useCallback((clear: boolean, type?: SearchTypes) => {   
+        const queryOffset = clear ? 0 : offset;
+        const querySearchType = type ? type : searchType;
+
+        let query = `${querySearchType}?api_key=${GIF_API_KEY}`;
+        if (querySearchType === 'trending') {
+            query += `&offset=${queryOffset}&limit=${apiLimit}`;
+        } else if (querySearchType === 'search') {
+            query += `&offset=${queryOffset}&limit=${apiLimit}&q=${searchValue}`;
+        }
+
+        gifApi.get(query)
+            .then(({ data }) => {
+                if (querySearchType === 'random') {
+                    setGifs([formatResponse(data.data)]);
                 } else {
-                    setGifs(prevState => [...prevState, ...newGifs]);
-                    setOffset(prevState => prevState + data.pagination.count);
-                }
-                setTitle(searchValue);
-            })
-    }, [searchValue, offset, setGifs, storage]);
+                    const newGifs = data.data.map((gif: IApiResponse) => formatResponse(gif));
+                    
+                    if (clear) {
+                        setGifs(newGifs);
+                    } else {
+                        setGifs(prevState => [...prevState, ...newGifs]);
+                    }
 
+                    setOffset(queryOffset + data.pagination.count);
+                }
+
+                setSearchType(querySearchType);
+            })
+    }, [offset, setGifs, searchType, formatResponse, searchValue]);
+
+    // fetch more gifs when reaches the bottom of the page 
     useEffect(() => {
         if (!isFetching) return;
+
         fetchGifs(false);
         setIsFetching(false);
-      }, [isFetching, fetchGifs]);
-
-    const handleSearchValue = (event: React.FormEvent<HTMLInputElement>) => {
-        setSearchValue(event.currentTarget.value);
-    }
+    }, [isFetching, fetchGifs]);
 
     const handleSearch = () => {
-        setOffset(0);
-        fetchGifs(true);
+        setTitle(searchValue);
+        fetchGifs(true, 'search');
     }
 
-    const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    const handleRandom = () => {
+        setTitle('random');
+        fetchGifs(true, 'random');
+    }
+
+    const handleSearchKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
         if (event.key === 'Enter') {
             handleSearch();
         }
@@ -160,15 +195,15 @@ const Home: React.FC = () => {
                     <Input>
                         <MdSearch size={30} />
                         <input 
-                            onChange={handleSearchValue}
-                            onKeyPress={handleKeyPress}
+                            onChange={(event) => setSearchValue(event.currentTarget.value)}
+                            onKeyPress={handleSearchKeyPress}
                         />
                     </Input>
                     <SearchGifButton onClick={handleSearch}>Search</SearchGifButton>
                 </InputArea>
                 
-                <RandomGif>
-                    <span>Search random gifs</span>
+                <RandomGif onClick={handleRandom}>
+                    <span>Search random gif</span>
                     <MdShuffle size={20} />
                 </RandomGif>
             </SearchBar>
@@ -188,7 +223,7 @@ const Home: React.FC = () => {
                                 alt="gif"
                             />
                             <GifInfo>
-                                <GifTitle>{`Title ${gif.title}`}</GifTitle>
+                                <GifTitle>{gif.title}</GifTitle>
                                 <GifAuthor>{gif.username ? `@${gif.username}` : 'anonymous'}</GifAuthor>
                             </GifInfo>
                         </GifCard>

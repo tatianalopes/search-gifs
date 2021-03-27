@@ -25,11 +25,7 @@ import { useStorage } from '../../hooks/storage';
 
 const Favorites: React.FC = () => {
 
-    const { storage, removeFavorite } = useStorage();
-
-    const handleDelete = (id: string) => {
-        removeFavorite(id);
-    }
+    const { favorites, removeFavorite } = useStorage();
 
     return (
         <Container>
@@ -43,24 +39,24 @@ const Favorites: React.FC = () => {
             </Header>
             <Content>
                 <Title>My favorite gifs</Title>
-                {Object.keys(storage).length === 0 ? 
+                {Object.keys(favorites).length === 0 ? 
                     <NoContent>
                         <img src={EmptyImg} alt="no favorites" />
                         <span>No gifs favorited yet</span>
                     </NoContent>
                     : <GifGrid>
-                        {Object.keys(storage).map(key => 
-                            <GifCard key={storage[key].id}>
-                            <DeleteButton onClick={() => handleDelete(storage[key].id)}>
+                        {Object.keys(favorites).map(key => 
+                            <GifCard key={favorites[key].id}>
+                            <DeleteButton onClick={() => removeFavorite(favorites[key].id)}>
                                 <MdDelete size={25} color={colors.gray} />
                             </DeleteButton>
                             <img 
-                                src={storage[key].url}
+                                src={favorites[key].url}
                                 alt="gif"
                             />
                             <GifInfo>
-                                <GifTitle>{`Title ${storage[key].title}`}</GifTitle>
-                                <GifAuthor>{storage[key].username ? `@${storage[key].username}` : 'anonymous'}</GifAuthor>
+                                <GifTitle>{favorites[key].title}</GifTitle>
+                                <GifAuthor>{favorites[key].username ? `@${favorites[key].username}` : 'anonymous'}</GifAuthor>
                             </GifInfo>
                         </GifCard>
                         )}
