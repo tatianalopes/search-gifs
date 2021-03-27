@@ -1,5 +1,7 @@
 import { createGlobalStyle } from 'styled-components';
 
+import colors from '../resources/colors';
+
 export default createGlobalStyle`
     * {
         margin: 0;
@@ -9,6 +11,6 @@ export default createGlobalStyle`
     }
     
     body {
-        background: white;
+        background-color: ${colors.lightBlue};
     }
 `;
