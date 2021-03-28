@@ -6,6 +6,7 @@ export const Container = styled.div`
     display: flex;
     flex-direction: column;
     padding: 47px 144px;
+    min-width: 1000px;
 `;
 
 export const Header = styled.div`
@@ -57,11 +58,38 @@ export const Content = styled.div`
 export const GifGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-row-gap: 20px;
-    grid-column-gap: 20px;
+    grid-gap: 20px;
 
     justify-items: center;
     align-items: center;
+
+    @media screen and (min-width: 1px) and (max-width: 1150px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media screen and (min-width: 1150px) and (max-width: 1400px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media screen and (min-width: 1400px) and (max-width: 1700px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media screen and (min-width: 1700px) and (max-width: 2000px) {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    @media screen and (min-width: 2000px) and (max-width: 2200px) {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    @media screen and (min-width: 2200px) and (max-width: 2400px) {
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    @media screen and (min-width: 2400px) and (max-width: 2800px) {
+        grid-template-columns: repeat(8, 1fr);
+    }
 `;
 
 export const NoContent = styled.div`
@@ -81,63 +109,4 @@ export const NoContent = styled.div`
         color: ${colors.isabelline};
         font-size: 20px;
     }
-`;
-
-export const GifCard = styled.div`
-    background-color: ${colors.silverPink};
-    border-radius: 5px;
-    box-shadow: 3px 4px 4px ${colors.darkBlue};
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    height: 263px;
-    position: relative;
-    width: 257px;
-
-    img {
-        width: 100%;
-        height: 214px;
-        border-top-left-radius: 5px;
-        border-top-right-radius: 5px;
-    }
-
-    svg {
-        opacity: 0;
-        position: absolute;
-        right: 8px;
-        top: 8px;
-    }
-
-    &:hover {
-        svg {
-            transition: opacity 0.5s;
-            opacity: 1;
-        }
-    }
-`;
-
-export const DeleteButton = styled.div`
-    background-color: transparent;
-    border: none;
-    outline: none;
-`;
-
-export const GifInfo = styled.div`
-    display: flex;
-    flex-direction: column;
-    height: 50px;
-    padding: 6px 10px 0 10px;
-    width: 100%;
-`;
-
-export const GifTitle = styled.div`
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-`;
-
-export const GifAuthor = styled.div`
-    font-size: 14px;
-    font-style: italic;
-    opacity: 0.5;
 `;

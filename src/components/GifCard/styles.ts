@@ -35,7 +35,7 @@ export const Container = styled.div`
      }
 `;
 
-export const FavoriteButton = styled.div`
+export const ActionButton = styled.div`
     background-color: transparent;
     border: none;
     outline: none;

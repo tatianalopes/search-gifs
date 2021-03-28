@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import {
     Container,
-    FavoriteButton,
+    ActionButton,
     GifInfo,
     GifTitle,
     GifAuthor,
@@ -39,12 +39,12 @@ const GifCard: React.FC<GifCardProps> = ({ gif, handleAction, iconType }) => {
 
     return (
         <Container>
-            <FavoriteButton onClick={(e) => handleAction(gif)}>
+            <ActionButton onClick={(e) => handleAction(gif)}>
                 {iconType === 'heart' ?
                     heartButton() :
                     (<MdDelete size={25} color={colors.gray} />)
                 }
-            </FavoriteButton>
+            </ActionButton>
             <img
                 src={gif.url}
                 alt="gif"

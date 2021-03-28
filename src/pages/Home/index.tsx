@@ -28,13 +28,13 @@ const GIF_API_KEY = process.env.REACT_APP_GIPHY_API_KEY;
 
 interface IApiResponse {
     id: string;
-        title: string;
-        username: string;
-        images: {
-            original: {
-                url: string;
-            }
+    title: string;
+    username: string;
+    images: {
+        original: {
+            url: string;
         }
+    }
 }
 
 interface IGif {
@@ -88,7 +88,7 @@ const Home: React.FC = () => {
     useEffect(() => {
         if (gifs.length > 0) return;
 
-        gifApi.get(`trending?api_key=${GIF_API_KEY}&offset=0&limit=${apiLimit}`)
+        gifApi.get(`/trending?api_key=${GIF_API_KEY}&offset=0&limit=${apiLimit}`)
             .then(({ data }) => {
                 const newGifs = data.data.map((gif: IApiResponse) => formatResponse(gif));
                 setGifs(newGifs);
@@ -101,7 +101,7 @@ const Home: React.FC = () => {
         const queryOffset = clear ? 0 : offset;
         const querySearchType = type ? type : searchType;
 
-        let query = `${querySearchType}?api_key=${GIF_API_KEY}`;
+        let query = `/${querySearchType}?api_key=${GIF_API_KEY}`;
         if (querySearchType === 'trending') {
             query += `&offset=${queryOffset}&limit=${apiLimit}`;
         } else if (querySearchType === 'search') {
@@ -137,8 +137,10 @@ const Home: React.FC = () => {
     }, [isFetching, fetchGifs]);
 
     const handleSearch = () => {
-        setTitle(searchValue);
-        fetchGifs(true, 'search');
+        if (searchValue) {
+            setTitle(searchValue);
+            fetchGifs(true, 'search');
+        }
     }
 
     const handleRandom = () => {
@@ -190,8 +192,8 @@ const Home: React.FC = () => {
                 <InputArea>
                     <Input>
                         <MdSearch size={30} />
-                        <input 
-                            onChange={(event) => setSearchValue(event.currentTarget.value)}
+                        <input
+                            onChange={(event) => setSearchValue(event.target.value)}
                             onKeyPress={handleSearchKeyPress}
                         />
                     </Input>

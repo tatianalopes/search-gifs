@@ -6,6 +6,7 @@ export const Container = styled.div`
     display: flex;
     flex-direction: column;
     padding: 47px 144px;
+    min-width: 1000px;
 `;
 
 export const Header = styled.div`
@@ -80,7 +81,7 @@ export const SearchBar = styled.div`
     margin-bottom: 20px;
 `;
 
-export const SearchGifButton = styled.div`
+export const SearchGifButton = styled.button`
     align-items: center;
     display: flex;
     justify-content: center;
@@ -101,7 +102,6 @@ export const SearchGifButton = styled.div`
 export const InputArea = styled.div`
     align-items: center;
     display: flex;
-
 `;
 
 export const Input = styled.div`
@@ -170,9 +170,36 @@ export const Content = styled.div`
 export const GifGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-row-gap: 20px;
-    grid-column-gap: 20px;
+    grid-gap: 20px;
 
     justify-items: center;
     align-items: center;
+
+    @media screen and (min-width: 1px) and (max-width: 1150px) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media screen and (min-width: 1150px) and (max-width: 1400px) {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    @media screen and (min-width: 1400px) and (max-width: 1700px) {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    @media screen and (min-width: 1700px) and (max-width: 2000px) {
+        grid-template-columns: repeat(5, 1fr);
+    }
+
+    @media screen and (min-width: 2000px) and (max-width: 2200px) {
+        grid-template-columns: repeat(6, 1fr);
+    }
+
+    @media screen and (min-width: 2200px) and (max-width: 2400px) {
+        grid-template-columns: repeat(7, 1fr);
+    }
+
+    @media screen and (min-width: 2400px) and (max-width: 2800px) {
+        grid-template-columns: repeat(8, 1fr);
+    }
 `;
