@@ -1,7 +1,8 @@
+import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import colors from '../../resources/values/colors';
 
-export const Container = styled.div`
+export const Container = styled(Link)`
      background-color: ${colors.silverPink};
      border-radius: 5px;
      box-shadow: 3px 4px 4px ${colors.darkBlue};

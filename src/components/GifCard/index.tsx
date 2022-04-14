@@ -38,8 +38,13 @@ const GifCard: React.FC<GifCardProps> = ({ gif, handleAction, iconType }) => {
     }, [gif.isFavorite, iconType]);
 
     return (
-        <Container>
-            <ActionButton onClick={(e) => handleAction(gif)}>
+        <Container to={{
+            pathname: gif.url
+        }} target="_blank" rel="noopener noreferrer">
+            <ActionButton onClick={(e) => {
+                e.preventDefault();
+                handleAction(gif);
+            }}>
                 {iconType === 'heart' ?
                     heartButton() :
                     (<MdDelete size={25} color={colors.gray} />)
