@@ -35,4 +35,4 @@ jobs:
       - name: Build page
         run: yarn build
       - name: Deploy Now
-        run: ./node_modules/.bin/vercel build --scope=tcalopes19-gmailcom --name=seacrh-gifs --token=${{ secrets.VERCEL_TOKEN }} --prod --confirm
+        run: ./node_modules/.bin/vercel build --scope=tcalopes19-gmailcom --name=search-gifs --token=${{ secrets.VERCEL_TOKEN }} --prod --confirm
