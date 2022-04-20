@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { MdFavorite, MdSearch, MdShuffle } from 'react-icons/md';
 import { FiLoader } from 'react-icons/fi';
+import DatePicker from 'react-datepicker';
+import "react-datepicker/dist/react-datepicker.css";
 
 import { 
     Container,
@@ -61,6 +63,11 @@ const Home: React.FC = () => {
     const [gifs, setGifs] = useState<IGif[]>([]);
     const [offset, setOffset] = useState(0);
     const [isFetching, setIsFetching] = useState(false);
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(null);
+    const onChange = (dates: any) => {
+        console.log('dates: ', dates)
+    };
 
     // detect when scroll reaches the bottom of the page
     useEffect(() => {
@@ -188,6 +195,13 @@ const Home: React.FC = () => {
                     <MdFavorite size={30} />
                 </FavoritesButton>
             </Header>
+            <DatePicker
+                selected={startDate}
+                onChange={onChange}
+                startDate={startDate}
+                endDate={endDate}
+                inline
+            />
             <SearchBar>
                 <InputArea>
                     <Input>
