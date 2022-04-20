@@ -35,8 +35,8 @@ jobs:
       - name: Build page
         run: yarn build:develop
       - name: Deploy Now
-        run: npx vercel --token ${VERCEL_TOKEN} --prod --confirm
+        run: npx vercel --scope=test-team19 --token ${VERCEL_TOKEN} --prod --confirm
         env:
           VERCEL_TOKEN: ${{ secrets.VERCEL_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID_STAGING }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_TEAM_PROJECT_ID_STAGING }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ORG_ID }}
