@@ -64,9 +64,8 @@ const Home: React.FC = () => {
     const [offset, setOffset] = useState(0);
     const [isFetching, setIsFetching] = useState(false);
     const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(null);
-    const onChange = (dates: any) => {
-        console.log('dates: ', dates)
+    const onChange = (date: any) => {
+        setStartDate(date)
     };
 
     // detect when scroll reaches the bottom of the page
@@ -199,7 +198,6 @@ const Home: React.FC = () => {
                 selected={startDate}
                 onChange={onChange}
                 startDate={startDate}
-                endDate={endDate}
                 inline
             />
             <SearchBar>
