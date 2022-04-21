@@ -35,8 +35,4 @@ jobs:
       - name: Build page
         run: yarn build:develop
       - name: Deploy Now
-        run: npx vercel --token ${VERCEL_TOKEN} --prod --confirm
-        env:
-          VERCEL_TOKEN: ${{ secrets.VERCEL_TEAM_TOKEN }}
-          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_TEAM_PROJECT_ID_STAGING }}
-          VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ORG_ID }}
+        run: ./node_modules/.bin/vercel build --scope=test-team19 --name=search-gifs-dev --token=${{ secrets.VERCEL_TEAM_TOKEN }} --prod --confirm
