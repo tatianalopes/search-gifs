@@ -1,0 +1,42 @@
+name: Publish to Vercel Staging (NEW - Linking)
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [16.x]
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '16'
+      - name: Get yarn cache directory path
+        id: yarn-cache-dir-path
+        run: echo "::set-output name=dir::$(yarn cache dir)"
+      - uses: actions/cache@v1
+        id: yarn-cache
+        with:
+          path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+      - name: Install Packages
+        run: yarn install --prefer-offline
+      - name: Run unit tests
+        run: yarn test --watchAll=False --silent --coverage
+      - name: Build page
+        run: yarn build:develop
+      - name: Deploy Now
+        run: ./node_modules/.bin/vercel build --token ${VERCEL_TOKEN} --prod --confirm
+        env:
+          VERCEL_TOKEN: ${{ secrets.VERCEL_TEAM_TOKEN }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_TEAM_PROJECT_ID_STAGING }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_TEAM_ORG_ID }}
