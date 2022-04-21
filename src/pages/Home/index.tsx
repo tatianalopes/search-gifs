@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { MdFavorite, MdSearch, MdShuffle } from 'react-icons/md';
 import { FiLoader } from 'react-icons/fi';
-import "react-datepicker/dist/react-datepicker.css";
 
 import { 
     Container,
